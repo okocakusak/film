@@ -1,0 +1,17 @@
+.bm-burger-button {
+    width: 45px;
+    height: 45px;
+}
+
+.menu-item {
+    margin-bottom: 5vh;
+    text-align: center;
+    
+}
+.nav-button{
+    transition: 0.5s;
+}
+.nav-button:hover {
+    scale: 1.1;
+}
+
