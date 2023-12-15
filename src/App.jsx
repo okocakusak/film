@@ -4,9 +4,15 @@ import { BrowserRouter, Link, Route, Router, useNavigate } from "react-router-do
 import { Root } from "postcss"
 import Homepage from "./homePage"
 import Actionmovies from "./Actionmovies"
+import Aos from "aos"
 
 function App() {
   useNavigate('/action')
+  
+  useEffect(() => {
+    Aos.init();
+  }, []);
+
   return (
       <div>
        

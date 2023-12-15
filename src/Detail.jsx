@@ -1,20 +1,27 @@
 import axios from "axios";
-import React from "react";
+import React, { useRef } from "react";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
-import { render } from "react-dom";
+import gsap from "gsap";
+import { slide as Menu } from "react-burger-menu";
+
 
 import "./burger.css";
 import Navbar from "./navbar";
+
 
 const baseURL = "https://api.themoviedb.org/3";
 const API_KEY = "3d2b9e9f0f762a64bb75d02055de8c4c";
 const base_url = "https://image.tmdb.org/t/p/original/";
 
+
+
 const Detail = () => {
   const [movies, setMovies] = useState(null);
   const { id } = useParams();
+
+  
 
   useEffect(() => {
     const options = {
@@ -56,20 +63,106 @@ const Detail = () => {
     console.log(newRating);
   };
 
+  const containerRef = useRef()
+  const detailRef = useRef()
+  const starRef = useRef()
+  const genreRef = useRef()
+
+
+
+  useEffect(() => {
+  
+    const animationTimeout = setTimeout(() => {
+      gsap.from(".image", { x: '-100%', delay: 0.3 });
+      gsap.to(containerRef.current, { opacity: 1});
+      gsap.from(detailRef.current, { x: '120%', delay:0.3});
+      gsap.to(detailRef.current, { opacity: 1});
+      gsap.from(starRef.current, { y: '100%', delay: 0.5 });
+      gsap.from(genreRef.current, { y: '-100%', delay: 0.5 });
+    }, 500);
+  
+    return () => {
+      clearTimeout(animationTimeout);
+    };
+  }, []);
+  
+
   return (
     <div className="h-screen w-screen bg-black overflow-x-hidden">
-      <Navbar/>
+      <div className="bg-white/10 font-semibold h-10 flex items-center justify-between py-8 shadow-xl px-24 text-lg absolute w-screen top-0 z-50 max-md:hidden text-white">
+        <a className="nav-button" href="/">
+          Home
+        </a>{" "}
+        <span className="w-1/2 flex justify-between">
+          <a className="nav-button" href="/top-rated">
+            Top Rated
+          </a>
+          <a className="nav-button" href="/action">
+            Action
+          </a>
+          <a className="nav-button" href="/romance">
+            Romance
+          </a>
+          <a className="nav-button" href="/comedy">
+            Comedy
+          </a>
+          <a className="nav-button" href="/horror">
+            Horror
+          </a>
+        </span>
+      </div>
+      <div className="bg-white/10 font-semibold text-white h-10 flex items-center justify-between p-4 sticky top-0 z-10 md:hidden">
+        <a href="/">Home</a>
+        <div className="flex justify-between absolute right-2 top-0">
+          <Menu
+            className="-mt-1 bg-gray-800/90 text-white justify-center py-32 uppercase font-bold text-2xl flex"
+            right
+            customCrossIcon={
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Cross_icon_%28white%29.svg/2048px-Cross_icon_%28white%29.svg.png" />
+            }
+            customBurgerIcon={
+              <img
+                className="w-4"
+                src="https://icon-library.com/images/white-hamburger-menu-icon/white-hamburger-menu-icon-24.jpg"
+              />
+            }
+            zIndex={50}
+          >
+            <a className="menu-item" href="/top-rated">
+              Top Rated
+            </a>
+            <a className="menu-item" href="/action">
+              Action
+            </a>
+            <a className="menu-item" href="/romance">
+              Romance
+            </a>
+            <a className="menu-item" href="/comedy">
+              Comedy
+            </a>
+            <a className="menu-item" href="/horror">
+              Horror
+            </a>
+          </Menu>
+        </div>
+      </div>
       <div className="h-1/2">
         {movies && (
           <div className="text-white flex items-center max-md:flex-col">
+            <div className="absolute top-0 opacity-50">
+              <img src={`${base_url}${movies.backdrop_path}`} alt="" />
+            </div>
+            
             <img
-              className="h-screen"
+              ref={containerRef}
+              className="h-screen image opacity-0"
               src={`${base_url}${movies.poster_path}`}
               alt=""
             />
-            <div className="justify-center mx-16">
-              <span>
+            <div ref={detailRef} className="justify-center mx-16 opacity-0">
+              <span >
                 <ReactStars
+                  ref={starRef}
                   count={5}
                   onChange={ratingChanged}
                   size={24}
@@ -81,7 +174,7 @@ const Detail = () => {
                 {movies.original_title ? movies.original_title : movies.name}
               </h1>
               <span>{movies.overview}</span>
-              <div className="flex">{genreList}</div>
+              <div ref={genreRef} className="flex">{genreList}</div>
             </div>
           </div>
         )}
